@@ -1,0 +1,15 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+ <meta charset="UTF-8">
+ <meta name="_csrf" th:content="${_csrf.token}">
+ <meta name="_csrf_header" th:content="${_csrf.headerName}">
+ <meta name="donation-url" th:content="${donationUrl}">
+ <title>Dragon List</title>
+ <link rel="icon" href="/images/logo.png">
+ <script src="/js/theme.js"></script>
+ <link rel="stylesheet" href="/frontend/index.css">
+ <script type="module" src="/frontend/index.js"></script>
+</head>
+<body><div id="root"></div><noscript>Для работы редактора включите JavaScript.</noscript></body>
+</html>

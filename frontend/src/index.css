@@ -1,0 +1,296 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Port of shlyapa's site-logo__name, with theme-specific readable colors. */
+.brand-logo {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  text-decoration: none;
+}
+.brand-logo__image { width: 48px; height: 48px; object-fit: contain; flex-shrink: 0; }
+.brand-logo__name {
+  display: block;
+  font-family: 'Iowan Old Style', Palatino, Georgia, serif;
+  font-size: 17px;
+  font-weight: 600;
+  letter-spacing: 0.06em;
+  line-height: 1.05;
+  text-align: center;
+  text-transform: uppercase;
+  color: var(--accent);
+}
+@supports ((background-clip: text) or (-webkit-background-clip: text)) {
+  .brand-logo__name {
+    background: linear-gradient(115deg, #5b21b6 0%, #9333ea 45%, #6b3bad 75%, #4c287e 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+  }
+  .dark .brand-logo__name {
+    background-image: linear-gradient(115deg, #cbb9e8 0%, #f0e9f8 45%, #a394c4 75%, #8f80b0 100%);
+    filter: drop-shadow(0 1px 0 rgba(20, 14, 34, 0.55));
+  }
+}
+.brand-logo__name::after {
+  content: '';
+  display: block;
+  width: 2.4rem;
+  height: 2px;
+  margin: 0.35rem auto 0;
+  border-radius: 999px;
+  background: linear-gradient(90deg, transparent, var(--accent), transparent);
+}
+.brand-logo--compact { flex-direction: row; gap: 6px; }
+.brand-logo--compact .brand-logo__image { width: 24px; height: 24px; }
+.brand-logo--compact .brand-logo__name { font-size: 13px; }
+.brand-logo--compact .brand-logo__name::after { margin-top: 2px; }
+@media (forced-colors: active) {
+  .brand-logo__name, .dark .brand-logo__name { color: CanvasText; background: none; filter: none; }
+}
+
+.donation-link {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 60px;
+  padding: 10px;
+  border: 1px solid var(--accent);
+  border-radius: 12px;
+  background: var(--accent-soft);
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 600;
+  transition: background 0.18s ease, box-shadow 0.18s ease;
+}
+.donation-link:hover { background: var(--surface-2); box-shadow: 0 2px 12px var(--accent-soft); }
+.donation-link:focus-visible { outline: 3px solid var(--accent); outline-offset: 3px; }
+.donation-heart { display: grid; place-items: center; width: 32px; height: 32px; border-radius: 10px; background: var(--surface); flex-shrink: 0; }
+
+:root {
+  color-scheme: light;
+  --bg: #faf9f8;
+  --surface: #ffffff;
+  --surface-2: #f3f2f1;
+  --border: #e4e2e0;
+  --text: #1f1f1f;
+  --text-muted: #6b6b6b;
+  --text-faint: #9a9a9a;
+  --accent: #9333ea;
+  --accent-hover: #a855f7;
+  --accent-active: #7e22ce;
+  --accent-soft: rgba(147, 51, 234, 0.08);
+  --success: #16a34a;
+  --danger: #dc2626;
+  --code-bg: #f3f2f1;
+  --overlay: rgba(0, 0, 0, 0.5);
+}
+
+/* Тёмная тема: глубокий графит, ни одного светлого пятна.
+   color-scheme: dark красит нативные select, checkbox, scrollbar, autocomplete. */
+.dark {
+  color-scheme: dark;
+  --bg: #0d0d10;
+  --surface: #141418;
+  --surface-2: #1c1c22;
+  --border: #2a2a32;
+  --text: #e6e6ea;
+  --text-muted: #a0a0aa;
+  --text-faint: #70707c;
+  --accent: #a78bfa;
+  --accent-hover: #c4b5fd;
+  --accent-active: #8b5cf6;
+  --accent-soft: rgba(139, 92, 246, 0.14);
+  --success: #34d399;
+  --danger: #f87171;
+  --code-bg: #111114;
+  --overlay: rgba(0, 0, 0, 0.65);
+}
+
+html, body, #root {
+  height: 100%;
+}
+
+body {
+  background-color: var(--bg);
+  color: var(--text);
+  font-family: 'Inter', system-ui, sans-serif;
+  font-size: 14px;
+  transition: background-color 0.18s ease, color 0.18s ease;
+}
+
+/* Нативные элементы тоже тёмные (select-«Все теги», автозаполнение input) */
+input, textarea, select, button {
+  color: var(--text);
+}
+select option, select optgroup {
+  background: var(--surface);
+  color: var(--text);
+}
+input::placeholder, textarea::placeholder {
+  color: var(--text-faint);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--border) transparent;
+}
+
+*::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+*::-webkit-scrollbar-thumb {
+  background: var(--border);
+  border-radius: 4px;
+}
+
+/* Focus ring */
+:focus-visible {
+  outline: 2px solid var(--accent);
+  outline-offset: 2px;
+  border-radius: 4px;
+}
+
+/* Markdown reading mode — serif, Obsidian style */
+.markdown-body {
+  font-family: 'Iowan Old Style', Palatino, Georgia, serif;
+  font-size: 16px;
+  line-height: 1.6;
+  color: var(--text);
+}
+
+.markdown-body h1 { font-size: 1.7em; font-weight: 700; margin: 1.2em 0 0.5em; line-height: 1.25; }
+.markdown-body h2 { font-size: 1.4em; font-weight: 700; margin: 1.1em 0 0.4em; line-height: 1.3; }
+.markdown-body h3 { font-size: 1.2em; font-weight: 600; margin: 1em 0 0.3em; }
+.markdown-body h4 { font-size: 1.05em; font-weight: 600; margin: 0.9em 0 0.3em; }
+.markdown-body p { margin: 0.6em 0; }
+.markdown-body ul { list-style: disc; padding-left: 1.5em; margin: 0.6em 0; }
+.markdown-body ol { list-style: decimal; padding-left: 1.5em; margin: 0.6em 0; }
+.markdown-body li { margin: 0.2em 0; }
+.markdown-body a { color: var(--accent); text-decoration: underline; text-underline-offset: 2px; }
+.markdown-body a:hover { color: var(--accent-hover); }
+.markdown-body code {
+  font-family: 'JetBrains Mono', 'SF Mono', ui-monospace, monospace;
+  font-size: 0.85em;
+  background: var(--code-bg);
+  padding: 0.15em 0.4em;
+  border-radius: 4px;
+}
+.markdown-body pre {
+  background: var(--code-bg);
+  padding: 0.9em 1em;
+  border-radius: 6px;
+  overflow-x: auto;
+  margin: 0.8em 0;
+  border: 1px solid var(--border);
+}
+.markdown-body pre code { background: transparent; padding: 0; }
+.markdown-body blockquote {
+  border-left: 3px solid var(--accent);
+  padding-left: 1em;
+  margin: 0.8em 0;
+  color: var(--text-muted);
+  font-style: italic;
+}
+.markdown-body table { border-collapse: collapse; margin: 0.8em 0; width: 100%; }
+.markdown-body th, .markdown-body td { border: 1px solid var(--border); padding: 0.4em 0.7em; text-align: left; }
+.markdown-body th { background: var(--surface-2); font-weight: 600; }
+.markdown-body hr { border: none; border-top: 1px solid var(--border); margin: 1.2em 0; }
+.markdown-body input[type="checkbox"] { margin-right: 0.5em; accent-color: var(--accent); }
+.markdown-body img { max-width: 100%; border-radius: 6px; }
+
+/* ---------- Система тегов: чипы с индивидуальным цветом ---------- */
+.tag-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 8px;
+  border-radius: 999px;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.3;
+  border: 1px solid color-mix(in srgb, var(--tag-color) 35%, transparent);
+  background: color-mix(in srgb, var(--tag-color) 12%, transparent);
+  color: color-mix(in srgb, var(--tag-color) 85%, var(--text));
+  transition: background 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+  cursor: pointer;
+  user-select: none;
+}
+.tag-chip:hover {
+  background: color-mix(in srgb, var(--tag-color) 22%, transparent);
+  border-color: color-mix(in srgb, var(--tag-color) 55%, transparent);
+}
+.tag-chip[data-active='true'] {
+  background: color-mix(in srgb, var(--tag-color) 30%, transparent);
+  border-color: color-mix(in srgb, var(--tag-color) 70%, transparent);
+}
+.tag-chip .tag-remove {
+  opacity: 0;
+  transition: opacity 0.12s ease;
+}
+.tag-chip:hover .tag-remove, .tag-chip:focus-within .tag-remove {
+  opacity: 1;
+}
+
+/* Кружок цвета тега */
+.tag-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  background: var(--tag-color);
+  flex-shrink: 0;
+}
+
+/* Светлая тема: приглушаем цвета тегов, чтобы не резали глаз */
+:root .tag-chip {
+  color: color-mix(in srgb, var(--tag-color) 70%, var(--text));
+}
+
+/* Animations — calm, paper-like */
+@keyframes fadeSlide {
+  from { opacity: 0; transform: translateY(4px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-slide {
+  animation: fadeSlide 0.18s ease-out;
+}
+
+@keyframes drawerIn {
+  from { transform: translateX(-100%); }
+  to { transform: translateX(0); }
+}
+
+.animate-drawer-in {
+  animation: drawerIn 0.2s ease-out;
+}
+
+@keyframes sheetIn {
+  from { transform: translateY(100%); }
+  to { transform: translateY(0); }
+}
+
+.animate-sheet-in {
+  animation: sheetIn 0.2s ease-out;
+}
+
+@keyframes pulseSoft {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.5; }
+}
+
+.animate-pulse-soft {
+  animation: pulseSoft 1.2s ease-in-out infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+  }
+}
