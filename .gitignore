@@ -1,0 +1,7 @@
+target/
+.work/
+.env
+*.log
+~$*
+Курсач_Смирнов.doc
+data/
