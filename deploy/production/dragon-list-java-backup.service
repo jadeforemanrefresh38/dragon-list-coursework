@@ -1,0 +1,10 @@
+[Unit]
+Description=Dragon List Java PostgreSQL backup
+After=docker.service
+Requires=docker.service
+[Service]
+Type=oneshot
+ExecStart=/usr/local/sbin/dragon-list-java-backup
+UMask=0077
+Nice=10
+IOSchedulingClass=idle

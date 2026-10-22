@@ -1,0 +1,98 @@
+name: dragon-java
+x-log: &log
+  driver: json-file
+  options: {max-size: "10m", max-file: "3"}
+x-lockdown: &lockdown
+  cap_drop: [ALL]
+  security_opt: [no-new-privileges:true]
+  read_only: true
+  pids_limit: 128
+  logging: *log
+services:
+  db:
+    image: postgres@sha256:deb28ee471183cb0c303113dac9b2433c51eeeeb678def7af9a9ec5820367815
+    restart: unless-stopped
+    user: "70:70"
+    cap_drop: [ALL]
+    security_opt: [no-new-privileges:true]
+    pids_limit: 128
+    mem_limit: 384m
+    cpus: 0.5
+    environment:
+      POSTGRES_DB: dragonlist
+      POSTGRES_PASSWORD: ${POSTGRES_ADMIN_PASSWORD:?}
+      MIGRATOR_PASSWORD: ${MIGRATOR_PASSWORD:?}
+      APP_PASSWORD: ${APP_PASSWORD:?}
+    volumes:
+      - /var/lib/dragon-list-java/postgres:/var/lib/postgresql/data
+      - ./init-db.sh:/docker-entrypoint-initdb.d/10-dragon.sh:ro
+    tmpfs: ["/var/run/postgresql:uid=70,gid=70,mode=775", "/tmp:mode=1777,size=64m"]
+    networks: [database]
+    healthcheck:
+      test: [CMD-SHELL, "pg_isready -U postgres -d dragonlist"]
+      interval: 5s
+      timeout: 3s
+      retries: 20
+    logging: *log
+  migrate:
+    <<: *lockdown
+    image: dragon-list-java:${RELEASE:?}
+    build: {context: ., dockerfile: Dockerfile}
+    restart: "no"
+    mem_limit: 512m
+    cpus: 0.5
+    tmpfs: ["/tmp:mode=1777,size=64m"]
+    environment:
+      DB_URL: jdbc:postgresql://db:5432/dragonlist
+      DB_USER: dragon_migrator
+      DB_PASSWORD: ${MIGRATOR_PASSWORD:?}
+    entrypoint: [java, "-Dloader.main=ru.dragonlist.config.SchemaMigrator", -cp, /app/app.jar, org.springframework.boot.loader.launch.PropertiesLauncher]
+    networks: [database]
+    depends_on:
+      db: {condition: service_healthy}
+  app:
+    <<: *lockdown
+    image: dragon-list-java:${RELEASE:?}
+    restart: unless-stopped
+    mem_limit: 1g
+    cpus: 1.0
+    tmpfs: ["/tmp:mode=1777,size=96m"]
+    environment:
+      SPRING_PROFILES_ACTIVE: prod
+      SERVER_ADDRESS: 0.0.0.0
+      DB_URL: jdbc:postgresql://db:5432/dragonlist
+      DB_USER: dragon_app
+      DB_PASSWORD: ${APP_PASSWORD:?}
+    networks:
+      backend: {aliases: [dragon-java-app]}
+      database: {}
+    depends_on:
+      migrate: {condition: service_completed_successfully}
+    healthcheck:
+      test: [CMD, java, "-Dloader.main=ru.dragonlist.config.HealthProbe", -cp, /app/app.jar, org.springframework.boot.loader.launch.PropertiesLauncher]
+      interval: 30s
+      timeout: 10s
+      start_period: 40s
+      retries: 3
+  waf:
+    <<: *lockdown
+    image: dragon-list-waf:${RELEASE:?}
+    build: {context: ., dockerfile: Dockerfile.waf}
+    restart: unless-stopped
+    mem_limit: 256m
+    cpus: 0.5
+    tmpfs: ["/tmp:uid=1000,gid=1000,mode=1777,size=64m"]
+    volumes: ["./waf.Caddyfile:/etc/dragon-waf/Caddyfile:ro"]
+    networks:
+      ingress: {aliases: [dragon-java-waf]}
+      backend: {}
+    depends_on:
+      app: {condition: service_healthy}
+networks:
+  ingress: {external: true, name: dragon-list_default}
+  backend:
+    internal: true
+    ipam: {config: [{subnet: 172.30.241.0/24}]}
+  database:
+    internal: true
+    ipam: {config: [{subnet: 172.30.242.0/24}]}

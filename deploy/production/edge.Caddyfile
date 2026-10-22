@@ -1,0 +1,14 @@
+dragon-list.lol, www.dragon-list.lol {
+ encode zstd gzip
+ request_body {
+  max_size 6MB
+ }
+ header {
+  X-Content-Type-Options nosniff
+  Strict-Transport-Security "max-age=31536000"
+ }
+ reverse_proxy dragon-java-waf:8080 {
+  header_up -Forwarded
+  header_up X-Dragon-Client-IP {remote_host}
+ }
+}

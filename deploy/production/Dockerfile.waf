@@ -1,0 +1,8 @@
+FROM ghcr.io/coreruleset/coraza-crs@sha256:627229dd936934d773cf1a8de77ec9ae89d547b1a891e6da3b46b0282bb694cc
+USER root
+# Copy without the upstream executable's low-port file capability; listen only on 8080.
+RUN cp /usr/bin/caddy /usr/local/bin/dragon-waf && chmod 755 /usr/local/bin/dragon-waf
+USER 1000:1000
+ENV XDG_CONFIG_HOME=/tmp/config XDG_DATA_HOME=/tmp/data
+ENTRYPOINT ["/usr/local/bin/dragon-waf"]
+CMD ["run","--config","/etc/dragon-waf/Caddyfile","--adapter","caddyfile"]

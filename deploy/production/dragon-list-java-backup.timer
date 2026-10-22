@@ -1,0 +1,8 @@
+[Unit]
+Description=Daily Dragon List Java backup
+[Timer]
+OnCalendar=*-*-* 04:10:00 Europe/Moscow
+Persistent=true
+RandomizedDelaySec=600
+[Install]
+WantedBy=timers.target

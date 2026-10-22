@@ -1,4 +1,4 @@
-import logo from '../assets/dragon-list-logo-v1.png'
+const logo = '/images/logo.png'
 
 /** Branding from psychopussy's shlyapa branch, adapted to the React shell. */
 export default function BrandLogo({ compact = false }) {

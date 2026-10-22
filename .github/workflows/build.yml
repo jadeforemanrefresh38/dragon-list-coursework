@@ -19,3 +19,24 @@ jobs:
           java-version: '17'
           cache: maven
       - run: mvn -B verify
+      - name: Python HTTP integration tests
+        shell: bash
+        run: |
+          mkdir -p .work
+          java -jar target/dragon-list-1.0.0.jar > .work/ci-server.log 2>&1 &
+          server_pid=$!
+          trap 'kill "$server_pid" 2>/dev/null || true' EXIT
+          python3 - <<'PY'
+          import time
+          import urllib.request
+          for attempt in range(45):
+              try:
+                  with urllib.request.urlopen('http://127.0.0.1:8080/healthz', timeout=2) as response:
+                      assert response.status == 200
+                  break
+              except Exception:
+                  time.sleep(1)
+          else:
+              raise SystemExit('Application did not become healthy')
+          PY
+          python3 tests/python/run_tests.py

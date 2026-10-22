@@ -1,0 +1,45 @@
+{
+ admin off
+ auto_https off
+ order coraza_waf first
+ log default {
+  level ERROR
+ }
+}
+:8080 {
+ request_body {
+  max_size 6MB
+ }
+ coraza_waf {
+  load_owasp_crs
+  directives `
+   Include @coraza.conf-recommended
+   SecRuleEngine On
+   SecRequestBodyLimit 6291456
+   SecRequestBodyNoFilesLimit 131072
+   SecResponseBodyAccess Off
+   SecAuditEngine RelevantOnly
+   SecAuditLog /dev/stdout
+   SecAuditLogFormat JSON
+   SecAuditLogParts AZ
+   Include @crs-setup.conf.example
+   SecAction "id:100010,phase:1,pass,nolog,setvar:tx.allowed_methods='GET HEAD POST OPTIONS PUT PATCH DELETE'"
+   # Notes are free text. Exclude only these JSON fields from code signature rules.
+   # Query parameters, authentication forms and all other fields remain inspected.
+   SecRule REQUEST_URI "@rx ^/api/notes/(?:[0-9]+/)?$" "id:100011,phase:1,pass,nolog,ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:json.content,ctl:ruleRemoveTargetByTag=attack-sqli;ARGS:json.title,ctl:ruleRemoveTargetByTag=attack-xss;ARGS:json.content,ctl:ruleRemoveTargetByTag=attack-xss;ARGS:json.title,ctl:ruleRemoveTargetByTag=attack-rce;ARGS:json.content,ctl:ruleRemoveTargetByTag=attack-lfi;ARGS:json.content"
+   Include @owasp_crs/*.conf
+  `
+ }
+ reverse_proxy dragon-java-app:8080 {
+  header_up X-Forwarded-Proto {http.request.header.X-Forwarded-Proto}
+  header_up X-Dragon-Client-IP {http.request.header.X-Dragon-Client-IP}
+  transport http {
+   dial_timeout 5s
+   response_header_timeout 30s
+  }
+ }
+ handle_errors 403 {
+  header X-Dragon-WAF blocked
+  respond "Request blocked by security policy" 403
+ }
+}
