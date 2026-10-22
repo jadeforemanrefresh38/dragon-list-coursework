@@ -25,7 +25,7 @@
 }
 @supports ((background-clip: text) or (-webkit-background-clip: text)) {
   .brand-logo__name {
-    background: linear-gradient(115deg, #5b21b6 0%, #9333ea 45%, #6b3bad 75%, #4c287e 100%);
+    background: linear-gradient(115deg, #604972 0%, #7b5895 45%, #705782 75%, #574164 100%);
     -webkit-background-clip: text;
     background-clip: text;
     color: transparent;
@@ -72,20 +72,20 @@
 
 :root {
   color-scheme: light;
-  --bg: #faf9f8;
-  --surface: #ffffff;
-  --surface-2: #f3f2f1;
-  --border: #e4e2e0;
-  --text: #1f1f1f;
-  --text-muted: #6b6b6b;
-  --text-faint: #9a9a9a;
-  --accent: #9333ea;
-  --accent-hover: #a855f7;
-  --accent-active: #7e22ce;
-  --accent-soft: rgba(147, 51, 234, 0.08);
-  --success: #16a34a;
-  --danger: #dc2626;
-  --code-bg: #f3f2f1;
+  --bg: #e5e3df;
+  --surface: #eeece7;
+  --surface-2: #e2dfda;
+  --border: #cec9c3;
+  --text: #302e35;
+  --text-muted: #625e68;
+  --text-faint: #756e79;
+  --accent: #785394;
+  --accent-hover: #694580;
+  --accent-active: #603b78;
+  --accent-soft: rgba(120, 83, 148, 0.10);
+  --success: #337345;
+  --danger: #a54141;
+  --code-bg: #e2dfda;
   --overlay: rgba(0, 0, 0, 0.5);
 }
 
