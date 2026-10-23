@@ -10,3 +10,13 @@ __pycache__/
 *.pyc
 *.env
 !*.env.example
+
+# OpenIDE: local state and generated Maven module files
+.idea/*
+!.idea/.name
+!.idea/misc.xml
+!.idea/compiler.xml
+!.idea/encodings.xml
+!.idea/vcs.xml
+*.iml
+out/
